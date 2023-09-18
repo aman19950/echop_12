@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load cart %}
+{% block title %}
+Cart
+{% endblock title %}
+
+{% block content %}
+
+<div class="container my-3">
+    <table class="table table-success table-striped">
+        <tr class="text-center">
+            <th>S No.</th>
+            <th>Product Name</th>
+            <th>Product Image</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total Price</th>
+
+        </tr>
+        {% for cart_var in cart_obj %}
+        <tr class="text-center">
+            <td>{{forloop.counter}}</td>
+            <td>{{cart_var.product_name}}</td>
+            <td>
+                <img src="{{cart_var.product_image.url}}" alt="" width=50 height=50>
+            </td>
+            <td>Rs.{{cart_var.product_price}}</td>
+            <td>{{cart_var|cartquantity:request.session.cart}}</td>
+            <td>Rs.{{cart_var|total_price:request.session.cart}}</td>
+        </tr>
+
+        {% endfor %}
+        <tr class="text-center">
+            <td colspan=4>
+                <h3>Payable amount</h3>
+            </td>
+            <td>
+                Rs.{{cart_obj|payable_amount:request.session.cart}}
+            </td>
+            <td>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#checkout">
+                    checkout
+                </button>
+            </td>
+        </tr>
+    </table>
+    <div class="modal fade" id="checkout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Checkout</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'checkout' %}" method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="formGroupExampleInput" class="form-label">Address</label>
+                            <input type="text" class="form-control" name="address" id="formGroupExampleInput" placeholder="enter your address...">
+                            </div>
+                            <div class="mb-3">
+                            <label for="formGroupExampleInput2" class="form-label">Mobile</label>
+                            <input type="number" class="form-control" name="mobile" id="formGroupExampleInput2" placeholder="enter your mobile...">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Checkout</button>
+                    </form>
+                </div>
+                {% comment %} <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div> {% endcomment %}
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock content %}
